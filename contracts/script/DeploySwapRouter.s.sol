@@ -1,0 +1,39 @@
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.26;
+
+import {Script, console2} from "forge-std/Script.sol";
+import {InariSwapRouter} from "../src/InariSwapRouter.sol";
+
+/// @notice Deploy InariSwapRouter and configure the pool key.
+///
+/// Usage:
+///   source .env && forge script script/DeploySwapRouter.s.sol:DeploySwapRouter \
+///     --rpc-url $UNICHAIN_SEPOLIA_RPC --broadcast -vvv
+contract DeploySwapRouter is Script {
+    function run() public {
+        uint256 pk = vm.envUint("PRIVATE_KEY");
+        address poolManager = vm.envAddress("POOL_MANAGER");
+        address vault = vm.envAddress("VAULT");
+        address usdc = vm.envAddress("USDC");
+        address hook = vm.envAddress("HOOK");
+
+        console2.log("PoolManager:", poolManager);
+        console2.log("Vault (dobRWA):", vault);
+        console2.log("USDC:", usdc);
+        console2.log("Hook:", hook);
+
+        vm.startBroadcast(pk);
+
+        InariSwapRouter router = new InariSwapRouter(poolManager);
+        console2.log("InariSwapRouter:", address(router));
+
+        // Configure pool key: fee=0, tickSpacing=1 (matching DeployUnichain)
+        router.setPoolKey(address(vault), address(usdc), 0, 1, hook);
+        console2.log("Pool key set");
+
+        vm.stopBroadcast();
+
+        console2.log("\n=== Add to .env ===");
+        console2.log("ROUTER=", address(router));
+    }
+}
