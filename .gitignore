@@ -5,7 +5,6 @@ contracts/.forge-cache/
 inari/node_modules/
 inari/.next/
 inari/tsconfig.tsbuildinfo
-contracts-old/
 .env
 .env.local
 *.secret
