@@ -19,7 +19,7 @@ type OracleState = {
 
 export function OraclePanel() {
   const { publicClient } = useEvm();
-  const [tokenAddr, setTokenAddr] = useState(DCT_TOKEN);
+  const [tokenAddr, setTokenAddr] = useState<string>(DCT_TOKEN);
   const [state, setState] = useState<OracleState | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -57,7 +57,7 @@ export function OraclePanel() {
           args: [addr as Hex],
         }),
       ]);
-      const [priceUsd, updatedAt] = priceResult as [bigint, bigint];
+      const [priceUsd, updatedAt] = priceResult as unknown as [bigint, bigint];
       setState({
         priceUsd,
         updatedAt,

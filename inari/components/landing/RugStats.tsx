@@ -1,8 +1,24 @@
 const stats = [
-  { value: "$3.8B", label: "Lost to rugs in 2023", source: "Chainalysis 'Crypto Crime Report'" },
-  { value: "$2.1M", label: "Drained from SQUID token in 7 days", source: "After timelock expiry" },
-  { value: "40,000+", label: "SQUID investors left with worthless tokens", source: "Single rug event" },
-  { value: "100%", label: "Of timelocks expire, then LP is removable", source: "By definition" },
+  {
+    value: "$16.1T",
+    label: "Global RWA market — real estate, bonds, commodities",
+    source: "World Bank, 2024 estimate",
+  },
+  {
+    value: "$20B+",
+    label: "Tokenized RWAs on-chain as of 2024",
+    source: "Boston Consulting Group",
+  },
+  {
+    value: "~0%",
+    label: "RWA trading volume routed through AMM DEXes",
+    source: "AMM curves break peg on illiquid RWAs",
+  },
+  {
+    value: "100%",
+    label: "Of Inari swaps settle at exact oracle price — zero slippage",
+    source: "beforeSwap intercepts, AMM never runs",
+  },
 ];
 
 export function RugStats() {
@@ -11,18 +27,17 @@ export function RugStats() {
       <div className="absolute inset-0 grid-bg opacity-50" aria-hidden />
       <div className="relative z-10 mx-auto flex h-full max-w-6xl flex-col justify-center px-6 sm:px-10">
         <div className="font-mono text-xs uppercase tracking-widest text-accent">
-          The cost of time-based locks
+          The RWA liquidity problem
         </div>
         <h2 className="mt-4 max-w-3xl font-serif text-4xl tracking-tight text-foreground sm:text-6xl">
-          A lock that always expires
+          Trillions in real assets.
           <br />
-          isn&rsquo;t a lock.
+          Zero DEX liquidity.
         </h2>
         <p className="mt-6 max-w-2xl text-base leading-7 text-foreground/70">
-          Every rug pull in 2021–2024 used &ldquo;locked liquidity&rdquo; as a trust
-          signal. Then the lock expired and the LP came out. Inari makes the
-          unlock contingent on performance — if the protocol delivers, the
-          team gets paid. If not, the LP stays where it is.
+          AMM curves are built for volatile assets. Tokenized real estate, bonds, and
+          commodities need to trade at a price — not at whatever the curve produces.
+          Inari uses the oracle as the settlement layer; the pool is just the pipe.
         </p>
 
         <div className="mt-12 grid grid-cols-2 gap-px overflow-hidden rounded-2xl border border-border bg-border sm:grid-cols-4">

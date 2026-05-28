@@ -1,5 +1,5 @@
-import { StatusPanel } from "@/components/app/StatusPanel";
+import { OraclePanel } from "@/components/app/StatusPanel";
 
-export default function StatusPage() {
-  return <StatusPanel />;
+export default function OraclePage() {
+  return <OraclePanel />;
 }

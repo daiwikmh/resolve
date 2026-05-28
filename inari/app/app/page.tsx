@@ -1,5 +1,5 @@
-import { VestingBuilder } from "@/components/app/VestingBuilder";
+import { SwapPanel } from "@/components/app/VestingBuilder";
 
-export default function BuildPage() {
-  return <VestingBuilder />;
+export default function SwapPage() {
+  return <SwapPanel />;
 }

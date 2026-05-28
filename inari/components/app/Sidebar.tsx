@@ -21,10 +21,10 @@ type NavItem = {
 };
 
 const NAV: NavItem[] = [
-  { href: "/app", label: "Register", letter: "R" },
-  { href: "/app/status", label: "Status", letter: "S" },
-  { href: "/app/brakes", label: "Brakes", letter: "B" },
-  { href: "/app/docs", label: "Docs", letter: "D", soon: true },
+  { href: "/app", label: "Swap", letter: "S" },
+  { href: "/app/status", label: "Oracle", letter: "O" },
+  { href: "/app/brakes", label: "Vault", letter: "V" },
+  { href: "/app/docs", label: "Docs", letter: "D" },
 ];
 
 const STORAGE_KEY = "Inari:sidebar-collapsed";

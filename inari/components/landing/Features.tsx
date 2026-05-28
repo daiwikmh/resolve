@@ -1,27 +1,27 @@
 const pillars = [
   {
-    tag: "01 · Register",
-    title: "Commit to milestones, not timestamps",
-    body: "Teams declare three on-chain milestones — TVL, cumulative volume, unique users — and the percent of LP each unlocks. The contract validates that unlock percentages sum to exactly 100. There&rsquo;s no admin key, no escape hatch.",
-    detail: "Three milestones. One commitment.",
+    tag: "01 · Oracle",
+    title: "Every swap settles at validated price",
+    body: "<code>beforeSwap</code> intercepts the trade before the AMM runs. The hook calls <code>registry.getPrice(rwaToken)</code>, computes the exact output, transfers tokens, and returns a custom delta to PoolManager — AMM math never executes.",
+    detail: "Oracle in. AMM out.",
   },
   {
-    tag: "02 · Lock",
-    title: "Liquidity routes through the hook",
-    body: "When the team adds liquidity to the v4 pool, `afterAddLiquidity` records the position in the Vault Manager. The LP is now custody-locked: removal is blocked until milestones unlock it, and the cumulative-withdrawal cap is enforced across calls.",
-    detail: "Vault custody. No team override.",
+    tag: "02 · Alert",
+    title: "Auto-suspend on oracle stress",
+    body: "When the validator pushes a new price, <code>_maybeTriggerAlert</code> checks it against the per-token threshold. A drop below threshold sets <code>alertActiveUntil = now + 1h</code> and subsequent <code>beforeSwap</code> calls revert with <code>OracleAlertActive</code>.",
+    detail: "No keeper. No external call.",
   },
   {
-    tag: "03 · Earn",
-    title: "Milestones unlock as the protocol delivers",
-    body: "Every swap updates the hook&rsquo;s own metrics: TVL, cumulative volume, unique swappers. When the on-chain number meets the registered threshold, anyone can call `claimMilestoneUnlock` — the hook validates the metric live and bumps the team&rsquo;s unlocked share.",
-    detail: "Hit the number, unlock the share.",
+    tag: "03 · Vault",
+    title: "Mint dobRWA against real collateral",
+    body: "Users deposit approved RWA tokens into <code>InariRwaVault</code>. The vault mints <code>dobRWA</code> at oracle price — a fungible ERC20 representing the pegged position. Redeem burns dobRWA and returns the underlying.",
+    detail: "Collateral in. Peg token out.",
   },
   {
-    tag: "04 · Defend",
-    title: "Rug signals trigger autonomous defenses",
-    body: "The hook auto-pauses team withdrawals inside `afterSwap` whenever its own pool fires: a ≥30% single-swap price drop activates a 1-hour crash brake; a ≥50% TVL fall from peak activates a 24-hour drawdown brake. No external trigger, no caller, no oracle.",
-    detail: "Brakes inside the hook. Nothing else.",
+    tag: "04 · LP Registry",
+    title: "Fillers earn fees backing liquidations",
+    body: "<code>InariLPRegistry</code> manages a queue of USDC fillers willing to buy discounted dobRWA during liquidation events. When a liquidation swap fires, the hook routes through the filler queue at a penalty-adjusted rate before falling to the protocol reserve.",
+    detail: "Incentivized liquidity, not passive AMM.",
   },
 ] as const;
 
@@ -31,23 +31,37 @@ export function Features() {
       <div className="relative z-10 mx-auto flex h-full max-w-6xl flex-col px-6 py-16 sm:px-10 sm:py-20">
         <div className="mb-10 flex items-end justify-between gap-6">
           <div>
-            <div className="font-mono text-xs uppercase tracking-widest" style={{ color: "rgba(196, 74, 60, 0.85)" }}>
+            <div
+              className="font-mono text-xs uppercase tracking-widest"
+              style={{ color: "rgba(196, 74, 60, 0.85)" }}
+            >
               The Inari flow
             </div>
-            <h2 className="mt-3 max-w-2xl font-serif text-4xl tracking-tight sm:text-6xl" style={{ color: "#f5ede0" }}>
-              Register. Lock. Earn. Defend.
+            <h2
+              className="mt-3 max-w-2xl font-serif text-4xl tracking-tight sm:text-6xl"
+              style={{ color: "#f5ede0" }}
+            >
+              Price. Alert. Vault. Fill.
               <br />
-              <span style={{ color: "rgba(245, 237, 224, 0.55)" }}>Four phases, every step on chain.</span>
+              <span style={{ color: "rgba(245, 237, 224, 0.55)" }}>
+                Four layers, all on-chain.
+              </span>
             </h2>
           </div>
-          <p className="hidden max-w-xs text-sm leading-6 sm:block" style={{ color: "rgba(245, 237, 224, 0.65)" }}>
-            The hook is its own oracle. It reads pool state from PoolManager via
-            <code className="mx-1 font-mono">afterSwap</code>, scores its own
-            risk, and lets anyone validate a milestone against ground truth.
+          <p
+            className="hidden max-w-xs text-sm leading-6 sm:block"
+            style={{ color: "rgba(245, 237, 224, 0.65)" }}
+          >
+            The hook is the settlement layer. It reads a validator oracle,
+            applies alert guards, and routes LP fills — without any external
+            trigger or keeper bot.
           </p>
         </div>
 
-        <div className="grid flex-1 grid-cols-1 gap-px overflow-hidden rounded-2xl sm:grid-cols-2" style={{ background: "rgba(245, 237, 224, 0.18)" }}>
+        <div
+          className="grid flex-1 grid-cols-1 gap-px overflow-hidden rounded-2xl sm:grid-cols-2"
+          style={{ background: "rgba(245, 237, 224, 0.18)" }}
+        >
           {pillars.map((p) => (
             <article
               key={p.tag}
@@ -55,10 +69,16 @@ export function Features() {
               style={{ background: "#241410" }}
             >
               <div>
-                <div className="font-mono text-[11px] uppercase tracking-widest" style={{ color: "#c44a3c" }}>
+                <div
+                  className="font-mono text-[11px] uppercase tracking-widest"
+                  style={{ color: "#c44a3c" }}
+                >
                   {p.tag}
                 </div>
-                <h3 className="mt-3 font-serif text-2xl tracking-tight" style={{ color: "#faf2e5" }}>
+                <h3
+                  className="mt-3 font-serif text-2xl tracking-tight"
+                  style={{ color: "#faf2e5" }}
+                >
                   {p.title}
                 </h3>
                 <p
@@ -76,15 +96,24 @@ export function Features() {
 
         <div
           className="mt-6 flex flex-col gap-3 rounded-2xl px-6 py-5 sm:flex-row sm:items-center sm:justify-between"
-          style={{ background: "rgba(245, 237, 224, 0.08)", border: "1px solid rgba(245, 237, 224, 0.16)" }}
+          style={{
+            background: "rgba(245, 237, 224, 0.08)",
+            border: "1px solid rgba(245, 237, 224, 0.16)",
+          }}
         >
           <div>
-            <div className="font-mono text-[11px] uppercase tracking-widest" style={{ color: "#c44a3c" }}>
+            <div
+              className="font-mono text-[11px] uppercase tracking-widest"
+              style={{ color: "#c44a3c" }}
+            >
               Plus · No keeper required
             </div>
-            <p className="mt-1 max-w-2xl text-[15px] leading-6" style={{ color: "rgba(250, 242, 229, 0.85)" }}>
-              Milestone unlocks are permissionless; the brakes are autonomous.
-              The protocol runs without a bot.
+            <p
+              className="mt-1 max-w-2xl text-[15px] leading-6"
+              style={{ color: "rgba(250, 242, 229, 0.85)" }}
+            >
+              Alert triggers fire inside <code>setPrice()</code>. LP fills execute inside{" "}
+              <code>beforeSwap()</code>. The protocol runs without a bot.
             </p>
           </div>
           <a

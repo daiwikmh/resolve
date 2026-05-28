@@ -59,7 +59,7 @@ export function SwapPanel() {
             args: [DCT_TOKEN as Hex],
           }),
         ]);
-        const [priceUsd] = priceResult as [bigint, bigint];
+        const [priceUsd] = priceResult as unknown as [bigint, number];
         setOraclePrice(priceUsd);
         setAlertActive(alertResult as boolean);
         setAlertUntil(alertUntilResult as bigint);
